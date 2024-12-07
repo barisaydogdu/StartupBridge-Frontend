@@ -131,6 +131,8 @@ export const Register = () => {
         email: '',
         password: '',
         confirmPassword: '',
+        role : "ROLE_ADMIN",
+        createdAt: new Date().toISOString(),
     });
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
@@ -154,21 +156,31 @@ export const Register = () => {
         setError('');
         //handleAuth fonksiyonuna register isteği at
         const result = await handleAuth('register', {
-            username: formData.username,
+            name: formData.username,
             email: formData.email,
-            password: formData.password
+            password: formData.password,
+            role : formData.role,
+            createdAt: formData.createdAt,
         });
 
         setIsLoading(false);
         //ba
-        if (!result.success) {
+
+        if (result.token) {
+            localStorage.setItem('token', result.token);
+            window.location.replace('/dashboard');
+        } else {
+            //Token gelmediyse hata mesajı göster
+            setError('Sign up failed!');
+        }
+        //bu kod calismiyor ama kalsin simdilik ihtiyacimiz olur belki
+       /* if (!result.success) {
             setError(result.error || 'Registration failed');
             return;
-        }
-
-        window.location.href = '/dashboard';
+        } else {
+            window.location.href = '/dashboard';
+        }*/
     };
-
     return (
         <div className="min-h-screen bg-gray-100 flex items-center justify-center">
             <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
@@ -188,7 +200,7 @@ export const Register = () => {
                         <input
                             type="text"
                             name="username"
-                            value={formData.username}
+                            value={formData.name}
                             onChange={handleChange}
                             className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                             placeholder="Username"

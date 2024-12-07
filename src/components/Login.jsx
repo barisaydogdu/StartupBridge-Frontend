@@ -76,6 +76,8 @@ export const Register = () => {
         email: '',
         password: '',
         confirmPassword: '',
+        role : 'ROLE_ADMIN',
+        createdAt: new Date().toISOString(),
     });
     const [error, setError] = useState('');
     const { register } = useAuth();
@@ -95,11 +97,15 @@ export const Register = () => {
         }
         try {
             await register({
-                username: formData.username,
+                name: formData.username,
                 email: formData.email,
-                password: formData.password
+                password: formData.password,
+                role : formData.role,
+                createdAt: formData.createdAt,
             });
             // Redirect or handle successful registration
+            window.location.replace('/dashboard');
+
         } catch (err) {
             setError('Registration failed');
         }
@@ -124,7 +130,7 @@ export const Register = () => {
                         <input
                             type="text"
                             name="username"
-                            value={formData.username}
+                            value={formData.name}
                             onChange={handleChange}
                             className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                             placeholder="Username"

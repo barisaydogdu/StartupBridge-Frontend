@@ -5,8 +5,10 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 //Routes ve Route: Sayfaları ve onların yollarını tanımlar
 // NAvigate: Kullanıcıyı başka bir yola yöneldnrimek için
 import { Login } from './components/Auth'; //Login bileşenini içe aktarıyor
+import { Register } from './components/Auth'; //Login bileşenini içe aktarıyor
 import Dashboard from './components/Dashboard';
 import HomePage from './components/HomePage';
+
 import {Home} from "lucide-react"; //Dashboard bileşenini içe aktarıyor
 
 // Koruma altına alınmış rota bileşeni
@@ -28,6 +30,7 @@ const App = () => {
             <Routes>
                 {/* "/login" yolu, Login bileşenini render eder */}
                 <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
                 {/* "/dashboard" yolu, korumalı bir rota. ProtectedRoute ile korunur */}
                 <Route
                     path="/dashboard"
