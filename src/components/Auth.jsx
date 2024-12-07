@@ -160,7 +160,7 @@ export const Register = () => {
         });
 
         setIsLoading(false);
-        //başarısızsa hata gönder
+        //ba
         if (!result.success) {
             setError(result.error || 'Registration failed');
             return;
