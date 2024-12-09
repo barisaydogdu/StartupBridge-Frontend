@@ -8,6 +8,8 @@ import { Login } from './components/Auth'; //Login bileşenini içe aktarıyor
 import { Register } from './components/Auth'; //Login bileşenini içe aktarıyor
 import Dashboard from './components/Dashboard';
 import HomePage from './components/HomePage';
+import Projects from './components/Projects';
+import Entrepreneur from "./components/Entrepreneur";
 
 import {Home} from "lucide-react"; //Dashboard bileşenini içe aktarıyor
 
@@ -26,17 +28,29 @@ const ProtectedRoute = ({ children }) => {
 const App = () => {
     return (
         //uygulamadaki tüm yolları tanımlar
-        <Router>
+        <Router>"
             <Routes>
                 {/* "/login" yolu, Login bileşenini render eder */}
                 <Route path="/login" element={<Login />} />
+                <Route path="/home" element={<Home/>} />
                 <Route path="/register" element={<Register />} />
+                <Route path="/projects" element={<Projects />} />
                 {/* "/dashboard" yolu, korumalı bir rota. ProtectedRoute ile korunur */}
                 <Route
                     path="/dashboard"
                     element={
                         <ProtectedRoute>
                             <Dashboard /> {/* ProtectedRoute içinde Dashboard bileşeni */}
+                        </ProtectedRoute>
+                    }
+                />
+
+                {/* Updated Entrepreneur routes */}
+                <Route
+                    path="/entrepreneurs/*"
+                    element={
+                        <ProtectedRoute>
+                            <Entrepreneur />
                         </ProtectedRoute>
                     }
                 />
