@@ -523,6 +523,7 @@ const EntrepreneurEditForm = ({onNavigate}) => {
         firstName: '',
         lastName: '',
         email: '',
+        password  : '',
         bio: '',
         phoneNumber: '',
         phoneVisibility: true,
@@ -545,10 +546,11 @@ const EntrepreneurEditForm = ({onNavigate}) => {
                 const data = await response.json();
                 if (!response.ok) throw new Error(data.message);
 
-                setFormData({
+                     setFormData({
                     firstName: data.firstName,
                     lastName: data.lastName,
                     email: data.email,
+                    password: data.password,
                     bio: data.bio || '',
                     phoneNumber: data.phoneNumber || '',
                     phoneVisibility: data.phoneVisibility,
@@ -560,6 +562,7 @@ const EntrepreneurEditForm = ({onNavigate}) => {
                 }
             } catch (err) {
                 setError(err.message);
+                console.error('Fetch error:', err);
             } finally {
                 setLoading(false);
             }
@@ -574,21 +577,63 @@ const EntrepreneurEditForm = ({onNavigate}) => {
         setError(null);
 
         try {
-            const response = await fetch(`${API_URL}/${id}`, {
+
+            const token = localStorage.getItem('token');
+            console.log("Token: ",token);
+            if (!token) {
+                throw new Error('Authentication token not found');
+            }
+            // Boş değerleri kontrol et
+         /*   const validatedFormData = {
+                ...formData,
+                bio: formData.bio || '',
+                phoneNumber: formData.phoneNumber || '',
+                profilePicture: formData.profilePicture || ''
+            };*/
+            const validatedFormData = {
+                entrepreneurId: parseInt(id), // Add the ID explicitly
+                firstName: formData.firstName,
+                lastName: formData.lastName,
+                email: formData.email,
+                password: formData.password,
+                bio: formData.bio || '',
+                phoneNumber: formData.phoneNumber || '',
+                phoneVisibility: formData.phoneVisibility,
+                profilePicture: formData.profilePicture || ''
+            };
+
+            const response = await fetch(`${API_URL}/${id}/edit`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                   // 'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    'Authorization': `Bearer ${token}`,
+                    'Accept': 'application/json'
                 },
-                body: JSON.stringify(formData)
+                body: JSON.stringify(validatedFormData)
             });
+            console.log("Response: ",response);
+
+
+            // Diğer hata durumları kontrolü
+            if (!response.ok) {
+                const errorData = await response.text();
+                try {
+                    const parsedError = JSON.parse(errorData);
+                    throw new Error(parsedError.message || 'Failed to fetch entrepreneur data');
+                } catch (e) {
+                    throw new Error('Failed to fetch entrepreneur data');
+                }
+            }
 
             const data = await response.json();
-            if (!response.ok) throw new Error(data.message);
+            onNavigate('details', id);
 
+            if (!response.ok) throw new Error(data.message);
             onNavigate('details', id);
         } catch (err) {
             setError(err.message);
+            console.error('Update error:', err);
         } finally {
             setIsSubmitting(false);
         }
