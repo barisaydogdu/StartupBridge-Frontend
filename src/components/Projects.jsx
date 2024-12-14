@@ -28,7 +28,14 @@ const ProjectManagement = () => {
     const fetchProjects = async () => {
         try {
             setLoading(true);
-            const response = await fetch(API_URL);
+            const token = localStorage.getItem('token');
+            const response = await fetch(API_URL, {
+                headers: {
+                    'Authorization': `Bearer ${token}`, // Authorization header ekleniyor
+                    'Content-Type': 'application/json',
+                },
+            });
+
             if (!response.ok) throw new Error('Projeler yüklenirken bir hata oluştu');
             const data = await response.json();
             setProjects(data);
@@ -44,11 +51,13 @@ const ProjectManagement = () => {
         try {
             const url = isEditing ? `${API_URL}/${currentProject.project_id}` : API_URL;
             const method = isEditing ? 'PUT' : 'POST';
-
+            const token = localStorage.getItem('token'); // JWT token'ı al
             const response = await fetch(url, {
                 method,
                 headers: {
+                    'Authorization': `Bearer ${token}`, // Authorization header ekleniyor
                     'Content-Type': 'application/json',
+
                 },
                 body: JSON.stringify(formData),
             });
