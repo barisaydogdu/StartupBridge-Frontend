@@ -11,6 +11,8 @@ import HomePage from './components/HomePage';
 import Projects from './components/Projects';
 import Entrepreneur from "./components/Entrepreneur";
 
+import BlogList from './components/BlogList';
+import BlogForm from './components/BlogForm';
 import {Home} from "lucide-react"; //Dashboard bileşenini içe aktarıyor
 
 // Koruma altına alınmış rota bileşeni
@@ -51,6 +53,32 @@ const App = () => {
                     element={
                         <ProtectedRoute>
                             <Entrepreneur />
+                        </ProtectedRoute>
+                    }
+                />
+
+                {/* Blog routes */}
+                <Route
+                    path="/blogs"
+                    element={
+                        <ProtectedRoute>
+                            <BlogList />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/blogs/new"
+                    element={
+                        <ProtectedRoute>
+                            <BlogForm />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/blogs/:id/edit"
+                    element={
+                        <ProtectedRoute>
+                            <BlogForm />
                         </ProtectedRoute>
                     }
                 />

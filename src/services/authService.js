@@ -9,7 +9,7 @@ export const authService = {
             localStorage.setItem('token', response.data.token);
         }
         //sunucudan dönen tüm veriler geriye döndürülüyor
-         return response.data;
+        return response.data;
     },
     //register endpointine bir post isteği gönderiliyor
     async register(userData) {
