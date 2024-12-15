@@ -10,9 +10,11 @@ import Dashboard from './components/Dashboard';
 import HomePage from './components/HomePage';
 import Projects from './components/Projects';
 import Entrepreneur from "./components/Entrepreneur";
+import Project from "./components/Projects";
 
 import {Home} from "lucide-react";
-import Investors from "./components/Investors"; //Dashboard bileşenini içe aktarıyor
+import Investors from "./components/Investors";
+import ProjectManagement from "./components/Projects"; //Dashboard bileşenini içe aktarıyor
 
 // Koruma altına alınmış rota bileşeni
 // buraya login olduktan sonra göstereceğimiz sayfaları ekliyicez
@@ -52,6 +54,14 @@ const App = () => {
                     element={
                         <ProtectedRoute>
                             <Entrepreneur />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/projects/*"
+                    element={
+                        <ProtectedRoute>
+                            <Project />
                         </ProtectedRoute>
                     }
                 />

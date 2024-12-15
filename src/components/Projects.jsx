@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import {Pencil, Trash2 } from 'lucide-react';
+import {Pencil, Trash2,UserCircle ,ArrowLeft} from 'lucide-react';
+import {useParams, Link, useNavigate, Routes, Route} from 'react-router-dom';
+
 
 const ProjectManagement = () => {
     const [projects, setProjects] = useState([]);
@@ -225,14 +227,44 @@ const ProjectManagement = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {projects.map(project => (
                     <div key={project.project_id} className="bg-white p-4 rounded-lg shadow-md">
+                        <Link to={`/projects/${project.project_id}`}>
+                            <h3 className="text-lg font-semibold mb-2 hover:text-blue-600 transition-colors">
+                                {project.project_name}
+                            </h3>
+                        </Link>
                         <h3 className="text-lg font-semibold mb-2">{project.project_name}</h3>
                         <p className="text-gray-600 mb-2">{project.short_description}</p>
                         <div className="text-sm text-gray-500 mb-4">
+
+                            {project.entrepreneur && (
+                                <div className="bg-gray-50 p-3 rounded mb-3">
+                                    <div className="flex items-center gap-2 text-sm text-gray-700 mb-2">
+                                        <UserCircle size={16} />
+                                        <span className="font-medium">Girişimci Bilgileri:</span>
+                                    </div>
+
+                                    <Link
+                                        to={`/entrepreneurs/${project.entrepreneur_id}`}
+                                        className="text-blue-500 hover:text-blue-700 underline text-sm"
+                                    >
+                                        Profile Git
+                                    </Link>
+
+                                    <div className="text-sm text-gray-600">
+                                        <p>Ad Soyad: {project.entrepreneur.firstName} {project.entrepreneur.lastName}</p>
+                                        <p>E-posta: {project.entrepreneur.email}</p>
+                                        {project.entrepreneur.phoneVisibility && project.entrepreneur.phoneNumber && (
+                                            <p>Telefon: {project.entrepreneur.phoneNumber}</p>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
                             <p>Sektör: {project.target_sector}</p>
                             <p>Aşama: {project.stage}</p>
                             <p>Bütçe: {project.budget_needed}</p>
                             <p>Gelir Modeli: {project.revenue_model}</p>
                         </div>
+
                         <div className="flex gap-2">
                             <button
                                 onClick={() => handleEdit(project)}
@@ -255,5 +287,154 @@ const ProjectManagement = () => {
         </div>
     );
 };
+const ProjectDetail = () => {
+    const [project, setProject] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const { id } = useParams();
 
-export default ProjectManagement;
+    useEffect(() => {
+        fetchProjectDetails();
+    }, [id]);
+
+    const fetchProjectDetails = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await fetch(`http://localhost:8080/projects/${id}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (!response.ok) throw new Error('Proje detayları yüklenirken bir hata oluştu');
+            const data = await response.json();
+            setProject(data);
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    if (loading) return <div className="flex justify-center items-center h-screen">Yükleniyor...</div>;
+    if (error) return <div className="text-red-500">{error}</div>;
+    if (!project) return <div>Proje bulunamadı</div>;
+
+    return (
+        <div className="container mx-auto p-4">
+            <Link to="/projects" className="flex items-center gap-2 text-gray-600 hover:text-gray-800 mb-6">
+                <ArrowLeft size={20} />
+                <span>Projelere Geri Dön</span>
+            </Link>
+
+            <div className="bg-white rounded-lg shadow-lg p-6">
+                <h1 className="text-3xl font-bold mb-4">{project.project_name}</h1>
+
+                {/* Girişimci Bilgileri */}
+                {project.entrepreneur && (
+                    <div className="bg-gray-50 p-4 rounded-lg mb-6">
+                        <div className="flex items-center justify-between mb-4">
+                            <div className="flex items-center gap-2">
+                                <UserCircle size={24} />
+                                <h2 className="text-xl font-semibold">Girişimci Bilgileri</h2>
+                            </div>
+                            <Link
+                                to={`/entrepreneurs/${project.entrepreneur_id}`}
+                                className="text-blue-500 hover:text-blue-700 underline"
+                            >
+                                Profile Git
+                            </Link>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <p><span className="font-medium">Ad Soyad:</span> {project.entrepreneur.firstName} {project.entrepreneur.lastName}</p>
+                                <p><span className="font-medium">E-posta:</span> {project.entrepreneur.email}</p>
+                            </div>
+                            <div>
+                                {project.entrepreneur.phoneVisibility && project.entrepreneur.phoneNumber && (
+                                    <p><span className="font-medium">Telefon:</span> {project.entrepreneur.phoneNumber}</p>
+                                )}
+                                {project.entrepreneur.bio && (
+                                    <p><span className="font-medium">Bio:</span> {project.entrepreneur.bio}</p>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* Proje Detayları */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <h2 className="text-xl font-semibold mb-3">Proje Detayları</h2>
+                        <div className="space-y-3">
+                            <p><span className="font-medium">Sektör:</span> {project.target_sector}</p>
+                            <p><span className="font-medium">Aşama:</span> {project.stage}</p>
+                            <p><span className="font-medium">Bütçe:</span> {project.budget_needed}</p>
+                            <p><span className="font-medium">Gelir Modeli:</span> {project.revenue_model}</p>
+                            {project.created_at && (
+                                <p><span className="font-medium">Oluşturulma Tarihi:</span> {new Date(project.created_at).toLocaleDateString('tr-TR')}</p>
+                            )}
+                        </div>
+                    </div>
+
+                    <div>
+                        <h2 className="text-xl font-semibold mb-3">Proje Açıklaması</h2>
+                        <p className="text-gray-700">{project.short_description}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+const Project = () => {
+    const navigate = useNavigate();
+
+    const handleNavigate = (view, id = null) => {
+        switch (view) {
+            case 'list':
+                navigate('/projects');
+                break;
+            case 'create':
+                navigate('/projects/create');
+                break;
+            case 'details':
+                navigate(`/projects/${id}`);
+                break;
+            case 'edit':
+                navigate(`/projects/${id}/edit`);
+                break;
+            default:
+                navigate('/projects');
+        }
+    };
+
+    return (
+        <div className="min-h-screen bg-gray-50">
+            <Routes>
+                <Route
+                    index
+                    element={<ProjectManagement onNavigate={handleNavigate} />}
+                />
+              {/*  <Route
+                    path="create"
+                    element={<EntrepreneurForm onNavigate={handleNavigate} />}
+                />*/}
+                <Route
+                    path=":id"
+                    element={<ProjectDetail onNavigate={handleNavigate} />}
+                />
+                <Route
+                    path=":id/edit"
+                    element={<ProjectManagement onNavigate={handleNavigate} />}
+                />
+            </Routes>
+        </div>
+    );
+};
+
+
+
+
+export default Project;
