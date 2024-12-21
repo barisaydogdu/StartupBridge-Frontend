@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { User, Mail, Phone, MapPin } from 'lucide-react';
+import { User, Mail, Phone, MapPin,Heart } from 'lucide-react';
 import { Routes, Route, useNavigate, useParams } from 'react-router-dom';
 
 const API_URL = 'http://localhost:8080/investors';
@@ -95,6 +95,7 @@ const InvestorsList = ({ onNavigate }) => {
         </div>
     );
 };
+
 const InvestorForm = ({ onNavigate }) => {
     const [formData, setFormData] = useState({
         first_name: '',
@@ -334,64 +335,72 @@ const InvestorForm = ({ onNavigate }) => {
     );
 };
 
+const INTERESTS_API_URL = 'http://localhost:8080/interestandvalues';
+
 const InvestorDetails = ({ onNavigate }) => {
     const { id } = useParams();
     const [investor, setInvestor] = useState(null);
+    const [interests, setInterests] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [isOwner, setIsOwner] = useState(false);
 
     useEffect(() => {
-        const fetchInvestorDetails = async () => {
+        const fetchData = async () => {
             try {
-                const response = await fetch(`${API_URL}/${id}`, {
+                const token = localStorage.getItem('token');
+                if (!token) throw new Error('No token found');
+
+                // Fetch investor details
+                const investorResponse = await fetch(`${API_URL}/${id}`, {
                     headers: {
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                        'Authorization': `Bearer ${token}`
                     }
                 });
 
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(data.message || 'Failed to fetch entrepreneur details');
+                if (!investorResponse.ok) {
+                    throw new Error('Failed to fetch investor details');
                 }
 
-                const data = await response.json();
-                console.log('Server Response:', data); // Debug için
+                const investorData = await investorResponse.json();
+                setInvestor(investorData);
 
-                //buraya sonradan bak
-                setInvestor(data);
+                // Check if current user is the owner
+                const payload = JSON.parse(atob(token.split('.')[1]));
+                setIsOwner(Number(payload.id) === Number(investorData.userId));
 
-                // JWT token'dan kullanıcı ID'sini al
-                const token = localStorage.getItem('token');
-                if (token) {
-                    const payload = JSON.parse(atob(token.split('.')[1]));
-                    console.log('Token payload:', payload); // Token içeriğini görmek için
-                    // Eğer token'daki user ID ile ınvestors'ın user ID'si eşleşiyorsa
-                    //setIsOwner(parseInt(payload.userId) === data.userId);
-                    const tokenUserId = Number(payload.id);
-                    const investorUserId = Number(data.userId);
-                    console.log('Token User ID:', tokenUserId);
-                    console.log('Investor User ID:', investorUserId);
-                    setIsOwner(tokenUserId === investorUserId);
-                    //setIsOwner(payload.userId === data.user.userId);
+                // Fetch interests and values
+                const interestsResponse = await fetch(INTERESTS_API_URL, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!interestsResponse.ok) {
+                    throw new Error('Failed to fetch interests');
                 }
+
+                const interestsData = await interestsResponse.json();
+                // Filter interests for the current investor
+                const investorInterests = interestsData.filter(
+                    interest => Number(interest.investor_id) === Number(investorData.investor_id)
+                );
+                setInterests(investorInterests);
+
             } catch (err) {
-                console.error('Fetch error:', err);
-                setError(err.message || 'Failed to load investors details');
+                setError(err.message);
             } finally {
                 setLoading(false);
             }
         };
 
-        if (id) {
-            fetchInvestorDetails();
-        }
+        fetchData();
     }, [id]);
 
     if (loading) {
         return (
             <div className="flex justify-center items-center min-h-screen">
-                <div className="text-lg text-gray-600">Loading...</div>
+                <div className="text-lg text-emerald-600">Loading...</div>
             </div>
         );
     }
@@ -416,99 +425,117 @@ const InvestorDetails = ({ onNavigate }) => {
             </div>
         );
     }
+
     return (
         <div className="container mx-auto p-4">
             {/* Header Section */}
             <div className="mb-6 flex justify-between items-center">
-                <h1 className="text-3xl font-bold text-gray-900">Entrepreneur Profile</h1>
+                <h1 className="text-3xl font-bold text-emerald-800">Investor Profile</h1>
                 <div className="flex space-x-4">
                     {isOwner && (
                         <button
                             onClick={() => onNavigate('edit', id)}
-                            className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+                            className="px-4 py-2 bg-emerald-600 text-white rounded-md hover:bg-emerald-700 transition-colors"
                         >
                             Edit Profile
                         </button>
                     )}
                     <button
                         onClick={() => onNavigate('list')}
-                        className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-colors"
+                        className="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors"
                     >
                         Back to List
                     </button>
                 </div>
             </div>
 
-            {/* Profile Card */}
-            <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-                {/* Cover & Profile Picture Section */}
-                <div className="h-48 bg-gradient-to-r from-blue-500 to-purple-500 relative">
-                    <div className="absolute -bottom-16 left-8">
-                        {investor.profile_picture ? (
-                            <img
-                                src={investor.profile_picture}
-                                alt={`${investor.first_name} ${investor.last_name}`}
-                                className="w-32 h-32 rounded-full border-4 border-white object-cover"
-                            />
-                        ) : (
-                            <div
-                                className="w-32 h-32 rounded-full border-4 border-white bg-gray-200 flex items-center justify-center">
-                                <User className="w-16 h-16 text-gray-400"/>
+            {/* Profile Info Section */}
+            <div className="space-y-6">
+                {/* Main Profile Card */}
+                <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+                    {/* Cover & Profile Picture Section */}
+                    <div className="h-48 bg-gradient-to-r from-emerald-500 to-emerald-700 relative">
+                        <div className="absolute -bottom-16 left-8">
+                            {investor.profile_picture ? (
+                                <img
+                                    src={investor.profile_picture}
+                                    alt={`${investor.first_name} ${investor.last_name}`}
+                                    className="w-32 h-32 rounded-xl border-4 border-white object-cover shadow-lg"
+                                />
+                            ) : (
+                                <div className="w-32 h-32 rounded-xl border-4 border-white bg-emerald-50 flex items-center justify-center shadow-lg">
+                                    <User className="w-16 h-16 text-emerald-400"/>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Profile Info */}
+                    <div className="pt-20 px-8 pb-8">
+                        <div className="mb-6">
+                            <h2 className="text-2xl font-bold text-gray-900">
+                                {investor.first_name} {investor.last_name}
+                            </h2>
+                            <p className="text-emerald-600">{investor.email}</p>
+                        </div>
+
+                        {investor.bio && (
+                            <div className="mb-6">
+                                <h3 className="text-lg font-semibold text-emerald-800 mb-2">About</h3>
+                                <p className="text-gray-600 leading-relaxed">{investor.bio}</p>
                             </div>
                         )}
+
+                        <div className="bg-emerald-50 rounded-lg p-4 space-y-3">
+                            <div className="flex items-center text-gray-700">
+                                <Mail className="w-5 h-5 mr-3 text-emerald-600"/>
+                                <span>{investor.email}</span>
+                            </div>
+                            {investor.phone_visibility && investor.phone_number && (
+                                <div className="flex items-center text-gray-700">
+                                    <Phone className="w-5 h-5 mr-3 text-emerald-600"/>
+                                    <span>{investor.phone_number}</span>
+                                </div>
+                            )}
+                            {investor.location && (
+                                <div className="flex items-center text-gray-700">
+                                    <MapPin className="w-5 h-5 mr-3 text-emerald-600"/>
+                                    <span>{investor.location}</span>
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
 
-                {/* Profile Info Section */}
-                <div className="pt-20 px-8 pb-8">
-                    {/* Name and Basic Info */}
-                    <div className="mb-6">
-                        <h2 className="text-2xl font-bold text-gray-900">
-                            {investor.first_name} {investor.last_name}
-                        </h2>
-                        <p className="text-gray-600">{investor.email}</p>
+                {/* Interests and Values Section */}
+                <div className="bg-white rounded-xl shadow-lg p-6 max-w-3xl">
+                    <div className="mb-6 flex items-center">
+                        <Heart className="w-6 h-6 text-emerald-500 mr-2"/>
+                        <h2 className="text-xl font-semibold text-emerald-800">Interests & Values</h2>
                     </div>
 
-                    {/* Bio Section */}
-                    {investor.bio && (
-                        <div className="mb-6">
-                            <h3 className="text-lg font-semibold text-gray-900 mb-2">About</h3>
-                            <p className="text-gray-600">{investor.bio}</p>
+                    {interests.length === 0 ? (
+                        <p className="text-gray-500 italic">No interests or values added yet.</p>
+                    ) : (
+                        <div className="space-y-4">
+                            {interests.map((interest) => (
+                                <div key={interest.interest_id}
+                                     className="bg-emerald-50 rounded-lg p-4 border border-emerald-100">
+                                    <h3 className="font-medium text-emerald-700 mb-2">
+                                        {interest.interest_area}
+                                    </h3>
+                                    <p className="text-gray-600 text-sm leading-relaxed">
+                                        {interest.social_impact}
+                                    </p>
+                                </div>
+                            ))}
                         </div>
                     )}
-
-                    {/* Contact Information */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <h3 className="text-lg font-semibold text-gray-900 mb-2">Contact Details</h3>
-                            <div className="space-y-3">
-                                <div className="flex items-center text-gray-600">
-                                    <Mail className="w-5 h-5 mr-2"/>
-                                    <span>{investor.email}</span>
-                                </div>
-                                {investor.phone_visibility && investor.phone_number && (
-                                    <div className="flex items-center text-gray-600">
-                                        <Phone className="w-5 h-5 mr-2"/>
-                                        <span>{investor.phoneNumber}</span>
-                                    </div>
-                                )}
-                                <p className="text-gray-600">{investor.email}</p>
-                                {investor.location && (
-                                    <p className="text-gray-500 flex items-center mt-2">
-                                        <MapPin className="w-5 h-5 mr-2"/>
-                                        {investor.location}
-                                    </p>
-                                )}
-
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
     );
 };
-
 // EntrepreneurEditForm Component
 const InvestorEditForm = ({onNavigate}) => {
     const {id} = useParams();
@@ -803,6 +830,8 @@ const InvestorEditForm = ({onNavigate}) => {
         </div>
     );
 };
+
+
 
 const Investors = () => {
     const navigate = useNavigate();

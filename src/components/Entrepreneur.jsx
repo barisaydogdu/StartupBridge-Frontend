@@ -1,12 +1,15 @@
 // App.js
 import React, { useState, useEffect} from 'react';
-import { User, Mail, Phone } from 'lucide-react';
+import {Award, User, Mail, Phone, MessageCircle,GraduationCap,  Briefcase, Clock } from 'lucide-react';
 import { Routes, Route, useNavigate, useParams } from 'react-router-dom';
+
+
 
 const API_URL = 'http://localhost:8080/entrepreneurs';
 const EntrepreneurList = ({ onNavigate }) => {
     const [entrepreneurs, setEntrepreneurs] = useState([]);
     const [error, setError] = useState(null);
+
     const [loading, setLoading] = useState(true);
 
     React.useEffect(() => {
@@ -354,63 +357,134 @@ const EntrepreneurForm = ({ onNavigate }) => {
     );
     if (!entrepreneur) return <div>No entrepreneur found</div>;
 */
+
+const EXPERTISE_API_URL = 'http://localhost:8080/expertise';
+const EDUCATION_API_URL = 'http://localhost:8080/education';
+const EXPERIENCE_API_URL = 'http://localhost:8080/experiences';
+
+
 const EntrepreneurDetails = ({ onNavigate }) => {
-    const { id } = useParams();
+    const id = window.location.pathname.split('/').pop();
+    const entrepreneurId = id;
     const [entrepreneur, setEntrepreneur] = useState(null);
+    const [expertise, setExpertise] = useState([]);
+    const [education, setEducation] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [experiences, setExperiences] = useState([]);
+
     const [isOwner, setIsOwner] = useState(false);
+    const [showChat, setShowChat] = useState(false);
+    const [currentUserId, setCurrentUserId] = useState(null);
 
     useEffect(() => {
-        const fetchEntrepreneurDetails = async () => {
-            try {
-                const response = await fetch(`${API_URL}/${id}`, {
-                    headers: {
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`
-                    }
-                });
+        const fetchData = async () => {
+            console.log('Current entrepreneurId:', entrepreneurId);
+            if (!entrepreneurId && entrepreneurId !== 0) {
+                setLoading(false);
+                return;
+            }
 
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(data.message || 'Failed to fetch entrepreneur details');
+            try {
+                // Fetch entrepreneur details
+                console.log('Fetching entrepreneur with ID:', entrepreneurId);
+                const entrepreneurResponse = await fetch(`${API_URL}/${entrepreneurId}`);
+                console.log('Response status:', entrepreneurResponse.status);
+
+                if (!entrepreneurResponse.ok) {
+                    const errorText = await entrepreneurResponse.text();
+                    console.error('Error response:', errorText);
+                    throw new Error('Failed to fetch entrepreneur details');
                 }
 
-                const data = await response.json();
-                console.log('Server Response:', data); // Debug için
+                const entrepreneurData = await entrepreneurResponse.json();
+                console.log('Entrepreneur data:', entrepreneurData);
+                setEntrepreneur(entrepreneurData);
 
-                setEntrepreneur(data);
+                try {
+                    // Fetch expertise data if available
+                    const expertiseResponse = await fetch(`${EXPERTISE_API_URL}`);
 
-                // JWT token'dan kullanıcı ID'sini al
+                    if (expertiseResponse.ok) {
+                        const expertiseData = await expertiseResponse.json();
+                        // Filter expertise for current entrepreneur
+                        const entrepreneurExpertise = expertiseData.filter(
+                            exp => exp.entrepreneur_id === parseInt(entrepreneurId)
+                        );
+                        setExpertise(entrepreneurExpertise);
+                    }
+                } catch (expertiseError) {
+                    console.log('Expertise data not available:', expertiseError);
+                    // Don't set error state for expertise failure
+                }
+
+                try {
+                    // Fetch education data if available
+                    const educationResponse = await fetch(`${EDUCATION_API_URL}`);
+
+                    if (educationResponse.ok) {
+                        const educationData = await educationResponse.json();
+                        // Filter education for current entrepreneur
+                        const entrepreneurEducation = educationData.filter(
+                            edu => edu.entrepreneurId === parseInt(entrepreneurId)
+                        );
+                        setEducation(entrepreneurEducation); // Fix: Use setEducation instead of setExpertise
+                        console.log('Education data:', entrepreneurEducation); // Add logging
+                    }
+                } catch (educationError) {
+                    console.log('Education data not available:', educationError);
+                    // Don't set error state for education failure
+                }
+
+
+                try {
+                    // Fetch experience data if available
+                    const experienceResponse = await fetch(`${EXPERIENCE_API_URL}`);
+
+                    if (experienceResponse.ok) {
+                        const experienceData = await experienceResponse.json();
+                        // Filter experience for current entrepreneur
+                        const entrepreneurExperience = experienceData.filter(
+                            exp => Number(exp.entrepreneur_id) === Number(entrepreneurId)
+                        );
+                        setExperiences(entrepreneurExperience);
+                        console.log('Experience data:', entrepreneurExperience);
+                    }
+                } catch (experienceError) {
+                    console.log('Experience data not available:', experienceError);
+                    // Don't set error state for experience failure
+                }
+
+
+
+                // Check if current user is the owner
                 const token = localStorage.getItem('token');
                 if (token) {
-                    const payload = JSON.parse(atob(token.split('.')[1]));
-                    console.log('Token payload:', payload); // Token içeriğini görmek için
-                    // Eğer token'daki user ID ile entrepreneur'ın user ID'si eşleşiyorsa
-                    //setIsOwner(parseInt(payload.userId) === data.userId);
-                    const tokenUserId = Number(payload.id);
-                    const entrepreneurUserId = Number(data.userId);
-                    console.log('Token User ID:', tokenUserId);
-                    console.log('Entrepreneur User ID:', entrepreneurUserId);
-                    setIsOwner(tokenUserId === entrepreneurUserId);
-                    //setIsOwner(payload.userId === data.user.userId);
+                    try {
+                        const payload = JSON.parse(atob(token.split('.')[1]));
+                        const tokenUserId = Number(payload.id);
+                        setCurrentUserId(tokenUserId);
+                        setIsOwner(tokenUserId === Number(entrepreneurData.userId));
+                    } catch (e) {
+                        console.log('Token parsing error:', e);
+                    }
                 }
+
             } catch (err) {
                 console.error('Fetch error:', err);
-                setError(err.message || 'Failed to load entrepreneur details');
+                setError(err.message || 'Failed to load entrepreneur data');
             } finally {
                 setLoading(false);
             }
         };
 
-        if (id) {
-            fetchEntrepreneurDetails();
-        }
-    }, [id]);
+        fetchData();
+    }, [entrepreneurId]);
 
     if (loading) {
         return (
             <div className="flex justify-center items-center min-h-screen">
-                <div className="text-lg text-gray-600">Loading...</div>
+                <div className="text-lg text-gray-600">Loading data...</div>
             </div>
         );
     }
@@ -426,11 +500,11 @@ const EntrepreneurDetails = ({ onNavigate }) => {
         );
     }
 
-    if (!entrepreneur) {
+    if (!entrepreneur || !Object.keys(entrepreneur).length) {
         return (
             <div className="container mx-auto p-4">
                 <div className="bg-yellow-50 border border-yellow-400 text-yellow-700 px-4 py-3 rounded">
-                    <p>No entrepreneur found with this ID.</p>
+                    <p>No entrepreneur found for ID: {entrepreneurId}</p>
                 </div>
             </div>
         );
@@ -442,9 +516,18 @@ const EntrepreneurDetails = ({ onNavigate }) => {
             <div className="mb-6 flex justify-between items-center">
                 <h1 className="text-3xl font-bold text-gray-900">Entrepreneur Profile</h1>
                 <div className="flex space-x-4">
+                    {!isOwner && (
+                        <button
+                            onClick={() => setShowChat(!showChat)}
+                            className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors flex items-center gap-2"
+                        >
+                            <MessageCircle className="w-5 h-5"/>
+                            {showChat ? 'Hide Chat' : 'Send Message'}
+                        </button>
+                    )}
                     {isOwner && (
                         <button
-                            onClick={() => onNavigate('edit', id)}
+                            onClick={() => onNavigate('edit', entrepreneurId)}
                             className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
                         >
                             Edit Profile
@@ -471,8 +554,7 @@ const EntrepreneurDetails = ({ onNavigate }) => {
                                 className="w-32 h-32 rounded-full border-4 border-white object-cover"
                             />
                         ) : (
-                            <div
-                                className="w-32 h-32 rounded-full border-4 border-white bg-gray-200 flex items-center justify-center">
+                            <div className="w-32 h-32 rounded-full border-4 border-white bg-gray-200 flex items-center justify-center">
                                 <User className="w-16 h-16 text-gray-400"/>
                             </div>
                         )}
@@ -497,6 +579,110 @@ const EntrepreneurDetails = ({ onNavigate }) => {
                         </div>
                     )}
 
+                    {/* Education Section */}
+                    <div className="mb-6">
+                        <h3 className="text-lg font-semibold text-gray-900 mb-2 flex items-center gap-2">
+                            <GraduationCap className="w-5 h-5"/>
+                            Education
+                        </h3>
+                        {education && education.length > 0 ? (
+                            <div className="space-y-3">
+                                {education.map((edu) => (
+                                    <div
+                                        key={edu.educationId}
+                                        className="p-4 bg-gray-50 rounded-lg border border-gray-100"
+                                    >
+                                        <h4 className="font-semibold text-gray-900">
+                                            {edu.schoolName}
+                                        </h4>
+                                        <p className="text-gray-600">
+                                            {edu.degree}
+                                        </p>
+                                        <p className="text-sm text-gray-500">
+                                            Graduated: {edu.graduationYear}
+                                        </p>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <p className="text-gray-500 italic">No education history listed</p>
+                        )}
+                    </div>
+
+
+                    {/* Experience Section */}
+                    <div className="mb-6">
+                        <h3 className="text-lg font-semibold text-gray-900 mb-2 flex items-center gap-2">
+                            <Briefcase className="w-5 h-5"/>
+                            Work Experience
+                        </h3>
+                        {loading ? (
+                            <div className="animate-pulse space-y-3">
+                                <div className="h-20 bg-gray-100 rounded-lg"></div>
+                                <div className="h-20 bg-gray-100 rounded-lg"></div>
+                            </div>
+                        ) : experiences && experiences.length > 0 ? (
+                            <div className="space-y-3">
+                                {experiences.map((exp) => (
+                                    <div
+                                        key={exp.experience_id}
+                                        className="p-4 bg-gray-50 rounded-lg border border-gray-100"
+                                    >
+                                        <div className="flex justify-between items-start">
+                                            <div>
+                                                <h4 className="font-semibold text-gray-900">
+                                                    {exp.company_name}
+                                                </h4>
+                                                <p className="text-blue-600">
+                                                    {exp.position}
+                                                </p>
+                                                <p className="text-gray-600 mt-2">
+                                                    {exp.description}
+                                                </p>
+                                            </div>
+                                            <div className="text-sm text-gray-500 flex items-center gap-1">
+                                                <Clock className="w-4 h-4"/>
+                                                {exp.duration_years} {exp.duration_years === 1 ? 'year' : 'years'}
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <p className="text-gray-500 italic">No work experience listed</p>
+                        )}
+                    </div>
+
+
+
+
+
+
+
+
+
+                    {/* Expertise Section */}
+                    <div className="mb-6">
+                        <h3 className="text-lg font-semibold text-gray-900 mb-2 flex items-center gap-2">
+                            <Award className="w-5 h-5"/>
+                            Expertise & Skills
+                        </h3>
+                        {expertise && expertise.length > 0 ? (
+                            <div className="flex flex-wrap gap-2">
+                                {expertise.map((skill) => (
+                                    <span
+                                        key={skill.expertise_id}
+                                        className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm"
+                                    >
+                                        {skill.skill_name}
+                                    </span>
+                                ))}
+                            </div>
+                        ) : (
+                            <p className="text-gray-500 italic">No expertise listed yet</p>
+                        )}
+                    </div>
+
                     {/* Contact Information */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
@@ -520,7 +706,6 @@ const EntrepreneurDetails = ({ onNavigate }) => {
         </div>
     );
 };
-// EntrepreneurEditForm Component
 const EntrepreneurEditForm = ({onNavigate}) => {
     const {id} = useParams();
     const [formData, setFormData] = useState({

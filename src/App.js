@@ -11,10 +11,12 @@ import HomePage from './components/HomePage';
 import Projects from './components/Projects';
 import Entrepreneur from "./components/Entrepreneur";
 import Project from "./components/Projects";
-
+import UserSettings from './components/UserSettings';
+import EducationSettings from './components/EducationSettings';
 import {Home} from "lucide-react";
 import Investors from "./components/Investors";
-import ProjectManagement from "./components/Projects"; //Dashboard bileşenini içe aktarıyor
+import InterestsAndValues from './components/InterestsAndValues';
+import ExperienceSettings from "./components/Experience"; //Dashboard bileşenini içe aktarıyor
 
 // Koruma altına alınmış rota bileşeni
 // buraya login olduktan sonra göstereceğimiz sayfaları ekliyicez
@@ -31,7 +33,7 @@ const ProtectedRoute = ({ children }) => {
 const App = () => {
     return (
         //uygulamadaki tüm yolları tanımlar
-        <Router>"
+        <Router>
             <Routes>
                 {/* "/login" yolu, Login bileşenini render eder */}
                 <Route path="/login" element={<Login />} />
@@ -73,6 +75,36 @@ const App = () => {
                             <Investors />
                         </ProtectedRoute>
                     }
+                />
+                <Route
+                    path="/education/*"
+                    element={
+                        <ProtectedRoute>
+                            <EducationSettings/>
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/experience/*"
+                    element={
+                        <ProtectedRoute>
+                            <ExperienceSettings/>
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/interestandvalues/*"
+                    element={
+                        <ProtectedRoute>
+                            <InterestsAndValues />
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/settings"
+                    element={<UserSettings />}
+                />
                 />
                 <Route path="/home" element={<HomePage />} />
                 {/* "/" yolu, kullanıcı giriş yaptıysa "/dashboard"a, yapmadıysa "/login"e yönlendirilir */}
