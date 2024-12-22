@@ -20,6 +20,8 @@ import ExperienceSettings from "./components/Experience"; //Dashboard bileşenin
 import BlogList from "./components/BlogList";
 import BlogForm from './components/BlogForm';
 import InvestmentPortfolio from "./components/InvestmentPortfolio";
+import BlogComments from "./components/BlogComments";
+import RoleSelection     from "./components/RoleSelection";
 // Koruma altına alınmış rota bileşeni
 // buraya login olduktan sonra göstereceğimiz sayfaları ekliyicez
 // asıl mantığı eğer localStrogeda token yoksa kullanıcıyı /login sayfasına yönlendiriyor
@@ -136,7 +138,22 @@ const App = () => {
                         </ProtectedRoute>
                     }
                 />
-
+                <Route
+                    path="/comments"
+                    element={
+                        <ProtectedRoute>
+                            <BlogComments/>
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/roleselection"
+                    element={
+                        <ProtectedRoute>
+                            <RoleSelection/>
+                        </ProtectedRoute>
+                    }
+                />
                 <Route
                     path="/settings"
                     element={<UserSettings />}

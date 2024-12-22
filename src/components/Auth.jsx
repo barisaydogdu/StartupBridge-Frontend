@@ -130,7 +130,8 @@ export const Login = () => {
                 // Eğer result bir token döndürdüyse localStroge'a kaydet ve dashboarda yönlendir -- dashboard şimdilik test için yönlendirilen bir sayfa değişecek
                 if (result.token) {
                     localStorage.setItem('token', result.token);
-                    window.location.replace('/dashboard');
+                   // window.location.replace('/dashboard');
+                    window.location.replace('/roleselection');
                 } else {
                     //Token gelmediyse hata mesajı göster
                     setError('Login failed!');
