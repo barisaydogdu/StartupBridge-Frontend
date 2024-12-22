@@ -17,7 +17,9 @@ import {Home} from "lucide-react";
 import Investors from "./components/Investors";
 import InterestsAndValues from './components/InterestsAndValues';
 import ExperienceSettings from "./components/Experience"; //Dashboard bileşenini içe aktarıyor
-
+import BlogList from "./components/BlogList";
+import BlogForm from './components/BlogForm';
+import InvestmentPortfolio from "./components/InvestmentPortfolio";
 // Koruma altına alınmış rota bileşeni
 // buraya login olduktan sonra göstereceğimiz sayfaları ekliyicez
 // asıl mantığı eğer localStrogeda token yoksa kullanıcıyı /login sayfasına yönlendiriyor
@@ -97,6 +99,40 @@ const App = () => {
                     element={
                         <ProtectedRoute>
                             <InterestsAndValues />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/investmentportfolio/*"
+                    element={
+                        <ProtectedRoute>
+                            <InvestmentPortfolio />
+                        </ProtectedRoute>
+                    }
+                />
+
+                {/* Blog routes */}
+                <Route
+                    path="/blogs"
+                    element={
+                        <ProtectedRoute>
+                            <BlogList />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/blogs/new"
+                    element={
+                        <ProtectedRoute>
+                            <BlogForm />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/blogs/:id/edit"
+                    element={
+                        <ProtectedRoute>
+                            <BlogForm />
                         </ProtectedRoute>
                     }
                 />

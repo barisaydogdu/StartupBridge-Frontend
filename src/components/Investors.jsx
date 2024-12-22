@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { User, Mail, Phone, MapPin,Heart } from 'lucide-react';
+import { User, Mail, Phone, MapPin,Heart,DollarSign, Building,Calendar } from 'lucide-react';
 import { Routes, Route, useNavigate, useParams } from 'react-router-dom';
 
 const API_URL = 'http://localhost:8080/investors';
@@ -336,11 +336,13 @@ const InvestorForm = ({ onNavigate }) => {
 };
 
 const INTERESTS_API_URL = 'http://localhost:8080/interestandvalues';
+const PORTFOLIO_API_URL = 'http://localhost:8080/investment-portfolios';
 
 const InvestorDetails = ({ onNavigate }) => {
     const { id } = useParams();
     const [investor, setInvestor] = useState(null);
     const [interests, setInterests] = useState([]);
+    const [portfolios, setPortfolios] = useState([]); // Added portfolios state
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [isOwner, setIsOwner] = useState(false);
@@ -386,6 +388,29 @@ const InvestorDetails = ({ onNavigate }) => {
                     interest => Number(interest.investor_id) === Number(investorData.investor_id)
                 );
                 setInterests(investorInterests);
+
+
+
+                // Fetch investment portfolios
+                const portfoliosResponse = await fetch(PORTFOLIO_API_URL, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!portfoliosResponse.ok) {
+                    throw new Error('Failed to fetch portfolios');
+                }
+
+                const portfoliosData = await portfoliosResponse.json();
+                // Filter portfolios for the current investor
+                const investorPortfolios = portfoliosData.filter(
+                    portfolio => Number(portfolio.investorId) === Number(investorData.investor_id)
+                );
+                setPortfolios(investorPortfolios);
+
+
+
 
             } catch (err) {
                 setError(err.message);
@@ -527,6 +552,50 @@ const InvestorDetails = ({ onNavigate }) => {
                                     <p className="text-gray-600 text-sm leading-relaxed">
                                         {interest.social_impact}
                                     </p>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+
+
+
+
+                {/* Investment Portfolio Section */}
+                <div className="bg-white rounded-xl shadow-lg p-6 max-w-3xl">
+                    <div className="mb-6 flex items-center">
+                        <DollarSign className="w-6 h-6 text-emerald-500 mr-2"/>
+                        <h2 className="text-xl font-semibold text-emerald-800">Investment Portfolio</h2>
+                    </div>
+
+                    {portfolios.length === 0 ? (
+                        <p className="text-gray-500 italic">No investments added yet.</p>
+                    ) : (
+                        <div className="space-y-4">
+                            {portfolios.map((portfolio) => (
+                                <div key={portfolio.portfolioId}
+                                     className="bg-emerald-50 rounded-lg p-4 border border-emerald-100">
+                                    <div className="flex items-center mb-2">
+                                        <Building className="w-5 h-5 text-emerald-600 mr-2"/>
+                                        <h3 className="font-medium text-emerald-700">
+                                            {portfolio.investedCompanyName}
+                                        </h3>
+                                    </div>
+                                    <div className="flex items-center text-sm text-emerald-600 mb-2">
+                                        <Calendar className="w-4 h-4 mr-2"/>
+                                        <span>
+                                            {new Date(portfolio.investmentDate).toLocaleDateString('en-US', {
+                                                year: 'numeric',
+                                                month: 'long',
+                                                day: 'numeric'
+                                            })}
+                                        </span>
+                                    </div>
+                                    {portfolio.description && (
+                                        <p className="text-gray-600 text-sm leading-relaxed">
+                                            {portfolio.description}
+                                        </p>
+                                    )}
                                 </div>
                             ))}
                         </div>
