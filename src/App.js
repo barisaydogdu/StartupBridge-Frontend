@@ -93,7 +93,12 @@ const App = () => {
                     }
                 />
             </Routes>
+            <Routes>
+                <Route path="/" element={<HomePage />} />
+                <Route path="/homepage" element={<HomePage />} />
+            </Routes>
         </Router>
+
     );
 };
 //app bileşenini dışa aktararak diğer dosyalarda kullanılır hale getireiyoeruz
