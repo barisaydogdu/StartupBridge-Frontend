@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {Pencil, Trash2 } from 'lucide-react';
+import { Pencil, Trash2, Plus, X, ChevronRight, Search } from 'lucide-react';
 
 const ProjectManagement = () => {
     const [projects, setProjects] = useState([]);
@@ -7,6 +7,8 @@ const ProjectManagement = () => {
     const [error, setError] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
     const [currentProject, setCurrentProject] = useState(null);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [selectedCategory, setSelectedCategory] = useState('all');
 
     const initialFormState = {
         project_name: '',
@@ -18,8 +20,12 @@ const ProjectManagement = () => {
     };
 
     const [formData, setFormData] = useState(initialFormState);
-
     const API_URL = 'http://localhost:8080/projects';
+
+    const categories = [
+        'All', 'Technology', 'Software', 'Healthcare',
+        'E-commerce', 'Finance', 'Education', 'Sustainability'
+    ];
 
     useEffect(() => {
         fetchProjects();
@@ -29,7 +35,7 @@ const ProjectManagement = () => {
         try {
             setLoading(true);
             const response = await fetch(API_URL);
-            if (!response.ok) throw new Error('Projeler yüklenirken bir hata oluştu');
+            if (!response.ok) throw new Error('Failed to load projects');
             const data = await response.json();
             setProjects(data);
         } catch (err) {
@@ -47,13 +53,11 @@ const ProjectManagement = () => {
 
             const response = await fetch(url, {
                 method,
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData),
             });
 
-            if (!response.ok) throw new Error('İşlem başarısız oldu');
+            if (!response.ok) throw new Error('Operation failed');
 
             fetchProjects();
             setFormData(initialFormState);
@@ -65,12 +69,10 @@ const ProjectManagement = () => {
     };
 
     const handleDelete = async (id) => {
-        if (window.confirm('Bu projeyi silmek istediğinizden emin misiniz?')) {
+        if (window.confirm('Are you sure you want to delete this project?')) {
             try {
-                const response = await fetch(`${API_URL}/${id}`, {
-                    method: 'DELETE',
-                });
-                if (!response.ok) throw new Error('Silme işlemi başarısız oldu');
+                const response = await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+                if (!response.ok) throw new Error('Delete operation failed');
                 fetchProjects();
             } catch (err) {
                 setError(err.message);
@@ -93,155 +95,298 @@ const ProjectManagement = () => {
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: value
-        }));
+        setFormData(prev => ({ ...prev, [name]: value }));
     };
 
-    if (loading) return <div className="flex justify-center items-center h-screen">Yükleniyor...</div>;
+    const filteredProjects = projects.filter(project => {
+        const matchesSearch = project.project_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            project.short_description.toLowerCase().includes(searchQuery.toLowerCase());
+        const matchesCategory = selectedCategory === 'all' ||
+            project.target_sector.toLowerCase() === selectedCategory.toLowerCase();
+        return matchesSearch && matchesCategory;
+    });
+
+    if (loading) return (
+        <div className="flex justify-center items-center min-h-screen">
+            <div className="text-lg text-blue-600">Loading...</div>
+        </div>
+    );
 
     return (
-        <div className="container mx-auto p-4">
-            <h1 className="text-2xl font-bold mb-6">Proje Yönetimi</h1>
-
-            {error && (
-                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-                    {error}
-                </div>
-            )}
-            <form onSubmit={handleSubmit} className="mb-8 bg-white p-6 rounded-lg shadow-md">
-                <h2 className="text-xl font-semibold mb-4">
-                    {isEditing ? 'Projeyi Düzenle' : 'Yeni Proje Ekle'}
-                </h2>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label className="block text-sm font-medium mb-1">Proje Adı</label>
-                        <input
-                            type="text"
-                            name="project_name"
-                            value={formData.project_name}
-                            onChange={handleInputChange}
-                            className="w-full p-2 border rounded"
-                            required
-                        />
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-medium mb-1">Hedef Sektör</label>
-                        <input
-                            type="text"
-                            name="target_sector"
-                            value={formData.target_sector}
-                            onChange={handleInputChange}
-                            className="w-full p-2 border rounded"
-                            required
-                        />
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-medium mb-1">Aşama</label>
-                        <input
-                            type="text"
-                            name="stage"
-                            value={formData.stage}
-                            onChange={handleInputChange}
-                            className="w-full p-2 border rounded"
-                            required
-                        />
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-medium mb-1">İhtiyaç Duyulan Bütçe</label>
-                        <input
-                            type="text"
-                            name="budget_needed"
-                            value={formData.budget_needed}
-                            onChange={handleInputChange}
-                            className="w-full p-2 border rounded"
-                            required
-                        />
-                    </div>
-
-                    <div className="md:col-span-2">
-                        <label className="block text-sm font-medium mb-1">Kısa Açıklama</label>
-                        <textarea
-                            name="short_description"
-                            value={formData.short_description}
-                            onChange={handleInputChange}
-                            className="w-full p-2 border rounded"
-                            rows="3"
-                            required
-                        />
-                    </div>
-
-                    <div className="md:col-span-2">
-                        <label className="block text-sm font-medium mb-1">Gelir Modeli</label>
-                        <input
-                            type="text"
-                            name="revenue_model"
-                            value={formData.revenue_model}
-                            onChange={handleInputChange}
-                            className="w-full p-2 border rounded"
-                            required
-                        />
-                    </div>
-                </div>
-
-                <div className="mt-4 flex gap-2">
-                    <button
-                        type="submit"
-                        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-                    >
-                        {isEditing ? 'Güncelle' : 'Ekle'}
-                    </button>
-
-                    {isEditing && (
+        <div className="min-h-screen bg-gray-50">
+            {/* Hero Section */}
+            <div className="bg-gradient-to-r from-blue-700 to-purple-600 text-white">
+                <div className="container mx-auto px-4 py-12">
+                    <div className="flex justify-between items-center mb-8">
+                        <h1 className="text-4xl font-bold">Project Management</h1>
                         <button
-                            type="button"
-                            onClick={() => {
-                                setIsEditing(false);
-                                setCurrentProject(null);
-                                setFormData(initialFormState);
-                            }}
-                            className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
+                            onClick={() => setIsEditing(true)}
+                            className="flex items-center gap-2 bg-white text-blue-600 px-6 py-2 rounded-lg font-medium hover:bg-blue-50 transition-colors"
                         >
-                            İptal
+                            <Plus size={20} />
+                            Add Project
                         </button>
-                    )}
-                </div>
-            </form>
+                    </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {projects.map(project => (
-                    <div key={project.project_id} className="bg-white p-4 rounded-lg shadow-md">
-                        <h3 className="text-lg font-semibold mb-2">{project.project_name}</h3>
-                        <p className="text-gray-600 mb-2">{project.short_description}</p>
-                        <div className="text-sm text-gray-500 mb-4">
-                            <p>Sektör: {project.target_sector}</p>
-                            <p>Aşama: {project.stage}</p>
-                            <p>Bütçe: {project.budget_needed}</p>
-                            <p>Gelir Modeli: {project.revenue_model}</p>
+                    {/* Search and Filter */}
+                    <div className="flex flex-col md:flex-row gap-4 items-center bg-white/10 backdrop-blur-md rounded-lg p-4">
+                        <div className="relative flex-grow">
+                            <Search className="absolute left-3 top-3 text-gray-400 w-5 h-5" />
+                            <input
+                                type="text"
+                                placeholder="Search projects..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className="w-full pl-10 pr-4 py-2 rounded-full bg-white/20 text-white placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-white/50"
+                            />
                         </div>
-                        <div className="flex gap-2">
+                    </div>
+                </div>
+            </div>
+
+            {/* Categories */}
+            <div className="border-b bg-white">
+                <div className="container mx-auto px-4">
+                    <div className="flex items-center space-x-6 py-4 overflow-x-auto">
+                        {categories.map((category) => (
                             <button
-                                onClick={() => handleEdit(project)}
-                                className="flex items-center gap-1 bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600"
+                                key={category}
+                                onClick={() => setSelectedCategory(category.toLowerCase())}
+                                className={`whitespace-nowrap px-4 py-2 rounded-full ${
+                                    selectedCategory === category.toLowerCase()
+                                        ? 'bg-blue-600 text-white'
+                                        : 'text-gray-600 hover:bg-gray-100'
+                                } transition-colors`}
                             >
-                                <Pencil size={16} />
-                                Düzenle
+                                {category}
                             </button>
+                        ))}
+                    </div>
+                </div>
+            </div>
+
+            {/* Main Content */}
+            <div className="container mx-auto px-4 py-8">
+                {error && (
+                    <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                        {error}
+                    </div>
+                )}
+
+                {/* Project Form Modal */}
+                {isEditing && (
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+                        <div className="bg-white rounded-xl shadow-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                            <div className="p-6">
+                                <div className="flex justify-between items-center mb-6">
+                                    <h2 className="text-2xl font-bold">
+                                        {currentProject ? 'Edit Project' : 'Add New Project'}
+                                    </h2>
+                                    <button
+                                        onClick={() => {
+                                            setIsEditing(false);
+                                            setCurrentProject(null);
+                                            setFormData(initialFormState);
+                                        }}
+                                        className="text-gray-500 hover:text-gray-700"
+                                    >
+                                        <X size={24} />
+                                    </button>
+                                </div>
+
+                                <form onSubmit={handleSubmit} className="space-y-6">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                                Project Name
+                                            </label>
+                                            <input
+                                                type="text"
+                                                name="project_name"
+                                                value={formData.project_name}
+                                                onChange={handleInputChange}
+                                                className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                                                required
+                                            />
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                                Target Sector
+                                            </label>
+                                            <input
+                                                type="text"
+                                                name="target_sector"
+                                                value={formData.target_sector}
+                                                onChange={handleInputChange}
+                                                className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                                                required
+                                            />
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                                Stage
+                                            </label>
+                                            <input
+                                                type="text"
+                                                name="stage"
+                                                value={formData.stage}
+                                                onChange={handleInputChange}
+                                                className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                                                required
+                                            />
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                                Budget Needed
+                                            </label>
+                                            <input
+                                                type="text"
+                                                name="budget_needed"
+                                                value={formData.budget_needed}
+                                                onChange={handleInputChange}
+                                                className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                                                required
+                                            />
+                                        </div>
+
+                                        <div className="md:col-span-2">
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                                Description
+                                            </label>
+                                            <textarea
+                                                name="short_description"
+                                                value={formData.short_description}
+                                                onChange={handleInputChange}
+                                                className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                                                rows="3"
+                                                required
+                                            />
+                                        </div>
+
+                                        <div className="md:col-span-2">
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                                Revenue Model
+                                            </label>
+                                            <input
+                                                type="text"
+                                                name="revenue_model"
+                                                value={formData.revenue_model}
+                                                onChange={handleInputChange}
+                                                className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                                                required
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="flex gap-3">
+                                        <button
+                                            type="submit"
+                                            className="flex-1 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                                        >
+                                            {currentProject ? 'Update Project' : 'Add Project'}
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setIsEditing(false);
+                                                setCurrentProject(null);
+                                                setFormData(initialFormState);
+                                            }}
+                                            className="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                                        >
+                                            Cancel
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* Projects Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {filteredProjects.map(project => (
+                        <div key={project.project_id} className="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+                            <div className="p-6">
+                                <div className="flex items-start justify-between mb-4">
+                                    <div>
+                                        <h3 className="text-xl font-bold text-gray-900 mb-2">
+                                            {project.project_name}
+                                        </h3>
+                                        <div className="inline-block bg-blue-100 text-blue-800 text-sm px-3 py-1 rounded-full">
+                                            {project.target_sector}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <p className="text-gray-600 mb-4">
+                                    {project.short_description}
+                                </p>
+
+                                <div className="space-y-2 mb-6">
+                                    <div className="flex justify-between text-sm">
+                                        <span className="text-gray-600">Stage:</span>
+                                        <span className="font-medium">{project.stage}</span>
+                                    </div>
+                                    <div className="flex justify-between text-sm">
+                                        <span className="text-gray-600">Budget:</span>
+                                        <span className="font-medium">{project.budget_needed}</span>
+                                    </div>
+                                    <div className="flex justify-between text-sm">
+                                        <span className="text-gray-600">Revenue Model:</span>
+                                        <span className="font-medium">{project.revenue_model}</span>
+                                    </div>
+                                </div>
+
+                                <div className="flex gap-3">
+                                    <button
+                                        onClick={() => handleEdit(project)}
+                                        className="flex items-center gap-2 flex-1 justify-center bg-blue-50 text-blue-600 px-4 py-2 rounded-lg hover:bg-blue-100 transition-colors"
+                                    >
+                                        <Pencil size={16} />
+                                        Edit
+                                    </button>
+                                    <button
+                                        onClick={() => handleDelete(project.project_id)}
+                                        className="flex items-center gap-2 bg-red-50 text-red-600 px-4 py-2 rounded-lg hover:bg-red-100 transition-colors"
+                                    >
+                                        <Trash2 size={16} />
+                                        Delete
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+
+                {/* Empty State */}
+                {filteredProjects.length === 0 && (
+                    <div className="text-center py-12">
+                        <div className="bg-white rounded-lg shadow-sm p-8 max-w-md mx-auto">
+                            <div className="text-gray-400 mb-4">
+                                <Search className="w-12 h-12 mx-auto" />
+                            </div>
+                            <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                                No Projects Found
+                            </h3>
+                            <p className="text-gray-600 mb-6">
+                                {searchQuery
+                                    ? "No projects match your search criteria. Try adjusting your search."
+                                    : "Get started by adding your first project."}
+                            </p>
                             <button
-                                onClick={() => handleDelete(project.project_id)}
-                                className="flex items-center gap-1 bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+                                onClick={() => setIsEditing(true)}
+                                className="inline-flex items-center gap-2 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
                             >
-                                <Trash2 size={16} />
-                                Sil
+                                <Plus size={20} />
+                                Add New Project
                             </button>
                         </div>
                     </div>
-                ))}
+                )}
             </div>
         </div>
     );
