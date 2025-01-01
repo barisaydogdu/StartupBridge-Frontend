@@ -1,7 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import {Pencil, Trash2,UserCircle ,ArrowLeft} from 'lucide-react';
-import {useParams, Link, useNavigate, Routes, Route} from 'react-router-dom';
-
+//import {Pencil, Trash2,UserCircle ,ArrowLeft,AlertCircle,FileQuestion,Rocket,LightbulbIcon,ExternalLink,User,Mail,Phone,FileText,Briefcase,Target,Layers,Wallet,LineChart,Calendar} from 'lucide-react';
+//import {useParams, Link, useNavigate, Routes, Route} from 'react-router-dom';
+import {
+    Pencil, Trash2, UserCircle, ArrowLeft, AlertCircle, FileQuestion,
+    Rocket, LightbulbIcon, ExternalLink, User, Mail, Phone, FileText,
+    Briefcase, Target, Layers, Wallet, LineChart, Calendar, ClipboardList,
+    Edit2, PlusCircle, Save, X, AlignLeft
+} from 'lucide-react';
+import { useParams, Link, useNavigate, Routes, Route } from 'react-router-dom';
 
 const ProjectManagement = () => {
     const [projects, setProjects] = useState([]);
@@ -317,70 +323,150 @@ const ProjectDetail = () => {
         }
     };
 
-    if (loading) return <div className="flex justify-center items-center h-screen">Yükleniyor...</div>;
-    if (error) return <div className="text-red-500">{error}</div>;
-    if (!project) return <div>Proje bulunamadı</div>;
+    if (loading) return (
+        <div className="flex justify-center items-center h-screen">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
+        </div>
+    );
+    if (error) return (
+        <div className="bg-red-50 text-red-600 p-4 rounded-lg text-center flex items-center justify-center gap-2">
+            <AlertCircle size={20} />
+            {error}
+        </div>
+    );
+    if (!project) return (
+        <div className="text-center text-gray-600 flex items-center justify-center gap-2">
+            <FileQuestion size={20} />
+            Proje bulunamadı
+        </div>
+    );
 
     return (
-        <div className="container mx-auto p-4">
-            <Link to="/projects" className="flex items-center gap-2 text-gray-600 hover:text-gray-800 mb-6">
-                <ArrowLeft size={20} />
-                <span>Projelere Geri Dön</span>
-            </Link>
+        <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
+            <div className="container mx-auto px-4 py-8">
+                <Link
+                    to="/projects"
+                    className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 transition-colors mb-8 bg-white px-4 py-2 rounded-lg shadow-sm hover:shadow-md"
+                >
+                    <ArrowLeft size={20} />
+                    <span>Projelere Geri Dön</span>
+                </Link>
 
-            <div className="bg-white rounded-lg shadow-lg p-6">
-                <h1 className="text-3xl font-bold mb-4">{project.project_name}</h1>
-
-                {/* Girişimci Bilgileri */}
-                {project.entrepreneur && (
-                    <div className="bg-gray-50 p-4 rounded-lg mb-6">
-                        <div className="flex items-center justify-between mb-4">
-                            <div className="flex items-center gap-2">
-                                <UserCircle size={24} />
-                                <h2 className="text-xl font-semibold">Girişimci Bilgileri</h2>
-                            </div>
-                            <Link
-                                to={`/entrepreneurs/${project.entrepreneur_id}`}
-                                className="text-blue-500 hover:text-blue-700 underline"
-                            >
-                                Profile Git
-                            </Link>
+                <div className="bg-white rounded-xl shadow-xl overflow-hidden">
+                    {/* Header Section */}
+                    <div className="bg-blue-600 text-white p-8">
+                        <div className="flex items-center gap-3 mb-4">
+                            <Rocket size={32} className="text-blue-200" />
+                            <h1 className="text-4xl font-bold">{project.project_name}</h1>
                         </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <p><span className="font-medium">Ad Soyad:</span> {project.entrepreneur.firstName} {project.entrepreneur.lastName}</p>
-                                <p><span className="font-medium">E-posta:</span> {project.entrepreneur.email}</p>
-                            </div>
-                            <div>
-                                {project.entrepreneur.phoneVisibility && project.entrepreneur.phoneNumber && (
-                                    <p><span className="font-medium">Telefon:</span> {project.entrepreneur.phoneNumber}</p>
-                                )}
-                                {project.entrepreneur.bio && (
-                                    <p><span className="font-medium">Bio:</span> {project.entrepreneur.bio}</p>
-                                )}
-                            </div>
-                        </div>
-                    </div>
-                )}
-
-                {/* Proje Detayları */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <h2 className="text-xl font-semibold mb-3">Proje Detayları</h2>
-                        <div className="space-y-3">
-                            <p><span className="font-medium">Sektör:</span> {project.target_sector}</p>
-                            <p><span className="font-medium">Aşama:</span> {project.stage}</p>
-                            <p><span className="font-medium">Bütçe:</span> {project.budget_needed}</p>
-                            <p><span className="font-medium">Gelir Modeli:</span> {project.revenue_model}</p>
-                            {project.created_at && (
-                                <p><span className="font-medium">Oluşturulma Tarihi:</span> {new Date(project.created_at).toLocaleDateString('tr-TR')}</p>
-                            )}
+                        <div className="flex items-start gap-2">
+                            <LightbulbIcon size={20} className="text-blue-200 mt-1 flex-shrink-0" />
+                            <p className="text-blue-100 text-lg">{project.short_description}</p>
                         </div>
                     </div>
 
-                    <div>
-                        <h2 className="text-xl font-semibold mb-3">Proje Açıklaması</h2>
-                        <p className="text-gray-700">{project.short_description}</p>
+                    <div className="p-8">
+                        {/* Girişimci Bilgileri */}
+                        {project.entrepreneur && (
+                            <div className="bg-blue-50 rounded-xl p-6 mb-8">
+                                <div className="flex items-center justify-between mb-6">
+                                    <div className="flex items-center gap-3">
+                                        <div className="bg-blue-600 rounded-full p-2">
+                                            <UserCircle size={24} className="text-white" />
+                                        </div>
+                                        <h2 className="text-2xl font-semibold text-blue-900">Girişimci Bilgileri</h2>
+                                    </div>
+                                    <Link
+                                        to={`/entrepreneurs/${project.entrepreneur_id}`}
+                                        className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+                                    >
+                                        <ExternalLink size={16} />
+                                        Profile Git
+                                    </Link>
+                                </div>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div className="space-y-3">
+                                        <p className="flex items-center gap-2">
+                                            <User size={18} className="text-blue-600" />
+                                            <span className="text-blue-900 font-medium">Ad Soyad:</span>
+                                            <span className="text-gray-700">{project.entrepreneur.firstName} {project.entrepreneur.lastName}</span>
+                                        </p>
+                                        <p className="flex items-center gap-2">
+                                            <Mail size={18} className="text-blue-600" />
+                                            <span className="text-blue-900 font-medium">E-posta:</span>
+                                            <span className="text-gray-700">{project.entrepreneur.email}</span>
+                                        </p>
+                                    </div>
+                                    <div className="space-y-3">
+                                        {project.entrepreneur.phoneVisibility && project.entrepreneur.phoneNumber && (
+                                            <p className="flex items-center gap-2">
+                                                <Phone size={18} className="text-blue-600" />
+                                                <span className="text-blue-900 font-medium">Telefon:</span>
+                                                <span className="text-gray-700">{project.entrepreneur.phoneNumber}</span>
+                                            </p>
+                                        )}
+                                        {project.entrepreneur.bio && (
+                                            <p className="flex items-center gap-2">
+                                                <FileText size={18} className="text-blue-600" />
+                                                <span className="text-blue-900 font-medium">Bio:</span>
+                                                <span className="text-gray-700">{project.entrepreneur.bio}</span>
+                                            </p>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Proje Detayları */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div className="bg-gray-50 rounded-xl p-6">
+                                <div className="flex items-center gap-3 mb-4">
+                                    <Briefcase size={24} className="text-blue-600" />
+                                    <h2 className="text-2xl font-semibold text-blue-900">Proje Detayları</h2>
+                                </div>
+                                <div className="space-y-4">
+                                    <div className="flex items-center gap-2 p-3 bg-white rounded-lg shadow-sm">
+                                        <Target size={18} className="text-blue-600" />
+                                        <span className="text-blue-900 font-medium">Sektör:</span>
+                                        <span className="text-gray-700">{project.target_sector}</span>
+                                    </div>
+                                    <div className="flex items-center gap-2 p-3 bg-white rounded-lg shadow-sm">
+                                        <Layers size={18} className="text-blue-600" />
+                                        <span className="text-blue-900 font-medium">Aşama:</span>
+                                        <span className="text-gray-700">{project.stage}</span>
+                                    </div>
+                                    <div className="flex items-center gap-2 p-3 bg-white rounded-lg shadow-sm">
+                                        <Wallet size={18} className="text-blue-600" />
+                                        <span className="text-blue-900 font-medium">Bütçe:</span>
+                                        <span className="text-gray-700">{project.budget_needed}</span>
+                                    </div>
+                                    <div className="flex items-center gap-2 p-3 bg-white rounded-lg shadow-sm">
+                                        <LineChart size={18} className="text-blue-600" />
+                                        <span className="text-blue-900 font-medium">Gelir Modeli:</span>
+                                        <span className="text-gray-700">{project.revenue_model}</span>
+                                    </div>
+                                    {project.created_at && (
+                                        <div className="flex items-center gap-2 p-3 bg-white rounded-lg shadow-sm">
+                                            <Calendar size={18} className="text-blue-600" />
+                                            <span className="text-blue-900 font-medium">Oluşturulma Tarihi:</span>
+                                            <span className="text-gray-700">
+                                                {new Date(project.created_at).toLocaleDateString('tr-TR')}
+                                            </span>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+
+                            <div className="bg-gray-50 rounded-xl p-6">
+                                <div className="flex items-center gap-3 mb-4">
+                                    <FileText size={24} className="text-blue-600" />
+                                    <h2 className="text-2xl font-semibold text-blue-900">Proje Açıklaması</h2>
+                                </div>
+                                <div className="bg-white rounded-lg p-4 shadow-sm">
+                                    <p className="text-gray-700 leading-relaxed">{project.short_description}</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
