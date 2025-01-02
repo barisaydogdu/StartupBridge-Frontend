@@ -425,7 +425,6 @@ const EntrepreneurForm = ({ onNavigate }) => {
     );
 };
 
-
 // Updated EntrepreneurDetails Component
 /*const EntrepreneurDetails = ({ onNavigate }) => {
     const { id } = useParams();

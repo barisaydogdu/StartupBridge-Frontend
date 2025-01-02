@@ -293,6 +293,8 @@ const ProjectManagement = () => {
         </div>
     );
 };
+
+
 const ProjectDetail = () => {
     const [project, setProject] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -480,7 +482,7 @@ const Project = () => {
     const handleNavigate = (view, id = null) => {
         switch (view) {
             case 'list':
-                navigate('/projects');
+                navigate('/projectslist');
                 break;
             case 'create':
                 navigate('/projects/create');

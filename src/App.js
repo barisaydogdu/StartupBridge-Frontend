@@ -22,6 +22,11 @@ import BlogForm from './components/BlogForm';
 import InvestmentPortfolio from "./components/InvestmentPortfolio";
 import BlogComments from "./components/BlogComments";
 import RoleSelection     from "./components/RoleSelection";
+import EntrepreneurList from "./components/EntrepreneurList";
+import InvestorsList from "./components/InvestorsList";
+import ProjectList from "./components/ProjectList";
+import ProjectCreate from "./components/ProjectCreate";
+import EntrepreneurSettings from "./components/EntrepreneurSettings";
 // Koruma altına alınmış rota bileşeni
 // buraya login olduktan sonra göstereceğimiz sayfaları ekliyicez
 // asıl mantığı eğer localStrogeda token yoksa kullanıcıyı /login sayfasına yönlendiriyor
@@ -41,7 +46,7 @@ const App = () => {
             <Routes>
                 {/* "/login" yolu, Login bileşenini render eder */}
                 <Route path="/login" element={<Login />} />
-                <Route path="/home" element={<Home/>} />
+                <Route path="/home" element={<HomePage/>} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/projects" element={<Projects />} />
                 {/* "/dashboard" yolu, korumalı bir rota. ProtectedRoute ile korunur */}
@@ -64,10 +69,42 @@ const App = () => {
                     }
                 />
                 <Route
+                    path="/entrepreneurssettings/*"
+                    element={
+                        <ProtectedRoute>
+                            <EntrepreneurSettings />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/entrepreneurslist/*"
+                    element={
+                        <ProtectedRoute>
+                            <EntrepreneurList />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
                     path="/projects/*"
                     element={
                         <ProtectedRoute>
                             <Project />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/projectslist/*"
+                    element={
+                        <ProtectedRoute>
+                            <ProjectList />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/addproject/*"
+                    element={
+                        <ProtectedRoute>
+                            <ProjectCreate />
                         </ProtectedRoute>
                     }
                 />
@@ -77,6 +114,14 @@ const App = () => {
                     element={
                         <ProtectedRoute>
                             <Investors />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/investorslist/*"
+                    element={
+                        <ProtectedRoute>
+                            <InvestorsList/>
                         </ProtectedRoute>
                     }
                 />
@@ -154,6 +199,7 @@ const App = () => {
                         </ProtectedRoute>
                     }
                 />
+
                 <Route
                     path="/settings"
                     element={<UserSettings />}
@@ -165,7 +211,7 @@ const App = () => {
                     path="/"
                     element={
                         localStorage.getItem('token')
-                            ? <Navigate to="/dashboard" replace /> // token varsa dashboarda yönlendir
+                            ? <Navigate to="/home" replace /> // token varsa dashboarda yönlendir
                             : <Navigate to="/login" replace /> // token yoksa logine yönlendir
                     }
                 />

@@ -71,6 +71,8 @@ export const Login = () => {
 };
 
 export const Register = () => {
+    const navigate = useNavigate(); // Initialize useNavigate
+
     const [formData, setFormData] = useState({
         username: '',
         email: '',
@@ -104,8 +106,8 @@ export const Register = () => {
                 createdAt: formData.createdAt,
             });
             // Redirect or handle successful registration
-            window.location.replace('/dashboard');
-
+          //  window.location.replace('/roleselection');
+            navigate('/roleselection');
         } catch (err) {
             setError('Registration failed');
         }

@@ -333,7 +333,7 @@ export const Register = () => {
 
         if (result.token) {
             localStorage.setItem('token', result.token);
-            window.location.replace('/dashboard');
+            window.location.replace('/roleselection');
         } else {
             //Token gelmediyse hata mesajı göster
             setError('Sign up failed!');
