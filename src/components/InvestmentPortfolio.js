@@ -4,6 +4,7 @@ import {
     Loader2, ChartLine, Target, Briefcase, TrendingUp,
     PieChart, BarChart4, Clock, FileText, Coins
 } from 'lucide-react';
+import NavbarAuth from "./NavbarAuth";
 
 const API_URL = 'http://localhost:8080/investment-portfolios';
 
@@ -131,6 +132,7 @@ const InvestmentPortfolio = () => {
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 py-12">
+            <NavbarAuth/>
             <div className="max-w-6xl mx-auto px-4">
                 {/* Stats/Overview Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">

@@ -4,6 +4,7 @@ import {
     User, ExternalLink, Clock, MapPin,Wallet,BarChart,TrendingUp,Heart,MessageCircle,Users
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import NavbarAuth from "./NavbarAuth";
 
 const ProjectList = () => {
     const navigate = useNavigate();
@@ -103,6 +104,7 @@ const ProjectList = () => {
 
     return (
         <div className="min-h-screen bg-gray-50">
+            <NavbarAuth/>
             {/* Hero Section */}
             <div className="relative">
                 {/* Background with gradient */}

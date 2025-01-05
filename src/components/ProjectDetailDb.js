@@ -7,6 +7,7 @@ import {
 
 
 } from 'lucide-react';
+import NavbarAuth from "./NavbarAuth";
 
 const ProjectDetailDb = () => {
     const { id } = useParams();
@@ -67,6 +68,7 @@ const ProjectDetailDb = () => {
 
     return (
         <div className="min-h-screen bg-gradient-to-b from-emerald-50 to-white">
+            <NavbarAuth/>
             <div className="container mx-auto px-4 py-8">
                 {/* Navigation */}
                 <button

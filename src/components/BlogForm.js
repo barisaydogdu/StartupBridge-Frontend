@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
+import NavbarAuth from "./NavbarAuth";
 
 const BlogForm = () => {
     const [blog, setBlog] = useState({
@@ -99,6 +100,7 @@ const BlogForm = () => {
     };
 
     return (
+
         <div className="min-h-screen bg-gray-50 py-12">
             <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="bg-white rounded-xl shadow-lg overflow-hidden">

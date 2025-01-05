@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, X, Edit2, Save, Briefcase } from 'lucide-react';
+import NavbarAuth from "./NavbarAuth";
 
 const API_URL = 'http://localhost:8080/entrepreneurs';
 const EXPERIENCE_API_URL = 'http://localhost:8080/experiences';
@@ -203,6 +204,7 @@ const ExperienceSettings = () => {
     if (error) {
         return (
             <div className="container mx-auto p-4">
+                <NavbarAuth/>
                 <div className="mb-4 p-4 bg-red-50 border border-red-400 text-red-700 rounded">
                     {error}
                 </div>

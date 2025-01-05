@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { User, Mail, Phone, MapPin, Heart, DollarSign, Building, Calendar, Upload, Camera, X, Bookmark, TrendingUp, Users, Target } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import NavbarAuth from "./NavbarAuth";
 
 const API_URL = 'http://localhost:8080/investors';
 
@@ -53,6 +54,7 @@ const InvestorsList = () => {
 
     return (
         <div className="min-h-screen bg-gray-50">
+            <NavbarAuth/>
             {/* Hero Section */}
             <div className="bg-gradient-to-br from-emerald-900 via-emerald-800 to-emerald-900 text-white">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">

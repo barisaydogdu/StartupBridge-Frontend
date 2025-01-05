@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, X, Edit2, Save, Heart, Loader2, LightbulbIcon, Target } from 'lucide-react';
+import NavbarAuth from "./NavbarAuth";
 
 const API_URL = 'http://localhost:8080/interestandvalues';
 
@@ -104,6 +105,7 @@ const InterestsAndValues = () => {
     if (loading) {
         return (
             <div className="flex justify-center items-center min-h-screen">
+                <NavbarAuth/>
                 <div className="flex flex-col items-center space-y-4">
                     <Loader2 className="w-12 h-12 text-blue-500 animate-spin" />
                     <p className="text-gray-600 animate-pulse">Loading your interests...</p>

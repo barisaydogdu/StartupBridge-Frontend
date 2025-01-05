@@ -5,6 +5,7 @@ import {
     Clock, Rocket
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import NavbarAuth from "./NavbarAuth";
 
 const InvestNow = ({ project }) => {
     const navigate = useNavigate();
@@ -60,6 +61,7 @@ const InvestNow = ({ project }) => {
 
     return (
         <div className="min-h-screen bg-gradient-to-b from-emerald-50 to-white">
+            <NavbarAuth/>
             <div className="container mx-auto px-4 py-8">
                 {/* Navigation */}
                 <button

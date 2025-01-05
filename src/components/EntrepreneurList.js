@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Award, User, Mail, Phone, MessageCircle, GraduationCap, Briefcase, Clock, Camera, X, LightbulbIcon, Rocket, Bookmark, TrendingUp, Users, Target, Sparkles } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import NavbarAuth from "./NavbarAuth";
 
 const API_URL = 'http://localhost:8080/entrepreneurs';
 
@@ -53,6 +54,7 @@ const EntrepreneurList = () => {
 
     return (
         <div className="min-h-screen bg-gray-50">
+            <NavbarAuth/>
             {/* Hero Section */}
             <div className="bg-gradient-to-br from-indigo-900 via-purple-800 to-indigo-900 text-white">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">

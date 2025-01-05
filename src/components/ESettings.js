@@ -11,6 +11,7 @@ import {
     Bell,
     Layout
 } from 'lucide-react';
+import NavbarAuth from "./NavbarAuth";
 
 const EntrepreneurSettingsHub = () => {
     const navigate = useNavigate();
@@ -74,6 +75,7 @@ const EntrepreneurSettingsHub = () => {
 
     return (
         <div className="min-h-screen bg-gray-50">
+            <NavbarAuth/>
             {/* Header Section */}
             <div className="bg-white border-b">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
