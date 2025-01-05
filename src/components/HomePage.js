@@ -122,63 +122,8 @@ const HomePage = () => {
 
     return (
         <div className="min-h-screen bg-white">
-            {/* Navigation */}
-            <nav className="fixed w-full z-50 bg-white/90 backdrop-blur-md shadow-sm">
-                <NavbarAuth/>
-              {/*  <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-                    <div className="flex items-center space-x-6">
-                        <Link to="/" className="text-2xl font-bold text-blue-700">
-                            Startup Bridge
-                        </Link>
-                        <div className="hidden md:flex space-x-4">
+            <NavbarAuth/>
 
-                            <Link to="/projects" className="text-gray-600 hover:text-blue-600">
-                                Projects
-                            </Link>
-                            <Link to="/investorslist" className="text-gray-600 hover:text-blue-600">
-                                Investors
-                            </Link>
-                            <Link to="/entrepreneurslist" className="text-gray-600 hover:text-blue-600">
-                                Entrepreneurs
-                            </Link>
-                            <Link to="/blogs" className="text-gray-600 hover:text-blue-600">
-                                Blog
-                            </Link>
-
-                        </div>
-                    </div>
-
-                    <div className="flex items-center space-x-4">
-                        <form
-                            onSubmit={(e) => {
-                                e.preventDefault();
-                                handleNavigation.search(e.target.search.value);
-                            }}
-                            className="relative hidden md:block"
-                        >
-                            <input
-                                name="search"
-                                type="text"
-                                placeholder="Search Project..."
-                                className="w-64 pl-10 pr-4 py-2 border rounded-full bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            />
-                            <Search className="absolute left-3 top-2.5 text-gray-400 w-5 h-5" />
-                        </form>
-                        <button
-                            onClick={handleNavigation.login}
-                            className="text-gray-700 hover:text-blue-600 transition"
-                        >
-                            Login
-                        </button>
-                        <button
-                            onClick={handleNavigation.signup}
-                            className="bg-blue-600 text-white px-4 py-2 rounded-full hover:bg-blue-700 transition"
-                        >
-                            Sign Up
-                        </button>
-                    </div>
-                </div>*/}
-            </nav>
 
             {/* Hero Section */}
             <div className="relative h-[600px] overflow-hidden">
@@ -340,7 +285,6 @@ const HomePage = () => {
                         See All <ChevronRight className="w-4 h-4" />
                     </Link>
                 </div>
-
 
                 <div
                     onClick={() => handleNavigation.project(featuredProject.id)}

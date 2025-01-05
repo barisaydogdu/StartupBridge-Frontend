@@ -488,7 +488,7 @@ const Project = () => {
                 navigate('/projects/create');
                 break;
             case 'details':
-                navigate(`/projects/${id}`);
+                navigate(`/investprojects/${id}`);
                 break;
             case 'edit':
                 navigate(`/projects/${id}/edit`);

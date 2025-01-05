@@ -28,6 +28,14 @@ import ProjectList from "./components/ProjectList";
 import ProjectCreate from "./components/ProjectCreate";
 import EntrepreneurSettings from "./components/EntrepreneurSettings";
 import AdminDashboard from "./components/AdminDashboard";
+import Expertise from "./components/Expertise";
+import ESettings from "./components/ESettings";
+import Privacy from "./components/Privacy";
+import ISettings from "./components/ISettings";
+import ProjectDetail from "./components/ProjectDetail";
+import ExploreProjects from "./components/ExploreProjects";
+import ProjectDetailDb from "./components/ProjectDetailDb";
+import InvestNow from "./components/InvestNow";
 // Koruma altına alınmış rota bileşeni
 // buraya login olduktan sonra göstereceğimiz sayfaları ekliyicez
 // asıl mantığı eğer localStrogeda token yoksa kullanıcıyı /login sayfasına yönlendiriyor
@@ -48,14 +56,37 @@ const App = () => {
                 {/* "/login" yolu, Login bileşenini render eder */}
                 <Route path="/login" element={<Login />} />
                 <Route path="/home" element={<HomePage/>} />
+
+                {/* "/projects/:id" yolu, belirli bir projenin detaylarını gösteren ProjectDetail bileşenini render eder. */}
+                <Route path="/projects/:id" element={<ProjectDetail />} />
+                <Route path="/projectsdb/:id" element={<ProjectDetailDb />} />
+                <Route path="/explore" element={<ExploreProjects />} />
+
+
+
+                    {/* other routes */}
+
+                {/* Projeleri başka bir URL'de göstermek için rota */}
+
+
                 <Route path="/register" element={<Register />} />
-                <Route path="/projects" element={<Projects />} />
+
+                {/*<Route path="/projects" element={<Projects />} />*/}
+                <Route path="/investprojects/*" element={<HomePage />} />
                 {/* "/dashboard" yolu, korumalı bir rota. ProtectedRoute ile korunur */}
                 <Route
                     path="/dashboard"
                     element={
                         <ProtectedRoute>
                             <Dashboard /> {/* ProtectedRoute içinde Dashboard bileşeni */}
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/investnow"
+                    element={
+                        <ProtectedRoute>
+                            <InvestNow /> {/* ProtectedRoute içinde Dashboard bileşeni */}
                         </ProtectedRoute>
                     }
                 />
@@ -85,14 +116,7 @@ const App = () => {
                         </ProtectedRoute>
                     }
                 />
-                <Route
-                    path="/projects/*"
-                    element={
-                        <ProtectedRoute>
-                            <Project />
-                        </ProtectedRoute>
-                    }
-                />
+
                 <Route
                     path="/projectslist/*"
                     element={
@@ -101,6 +125,7 @@ const App = () => {
                         </ProtectedRoute>
                     }
                 />
+
                 <Route
                     path="/addproject/*"
                     element={
@@ -139,6 +164,38 @@ const App = () => {
                     element={
                         <ProtectedRoute>
                             <ExperienceSettings/>
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/expertise/*"
+                    element={
+                        <ProtectedRoute>
+                            <Expertise/>
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/privacy/*"
+                    element={
+                        <ProtectedRoute>
+                            <Privacy/>
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/esettings/*"
+                    element={
+                        <ProtectedRoute>
+                            <ESettings/>
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/isettings/*"
+                    element={
+                        <ProtectedRoute>
+                            <ISettings/>
                         </ProtectedRoute>
                     }
                 />
