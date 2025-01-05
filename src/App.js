@@ -27,6 +27,7 @@ import InvestorsList from "./components/InvestorsList";
 import ProjectList from "./components/ProjectList";
 import ProjectCreate from "./components/ProjectCreate";
 import EntrepreneurSettings from "./components/EntrepreneurSettings";
+import AdminDashboard from "./components/AdminDashboard";
 // Koruma altına alınmış rota bileşeni
 // buraya login olduktan sonra göstereceğimiz sayfaları ekliyicez
 // asıl mantığı eğer localStrogeda token yoksa kullanıcıyı /login sayfasına yönlendiriyor
@@ -196,6 +197,14 @@ const App = () => {
                     element={
                         <ProtectedRoute>
                             <RoleSelection/>
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/adminpanel"
+                    element={
+                        <ProtectedRoute>
+                            <AdminDashboard/>
                         </ProtectedRoute>
                     }
                 />
