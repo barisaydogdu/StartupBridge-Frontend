@@ -27,14 +27,14 @@ StartupBridge Frontend is the user interface for the StartupBridge platform. It 
 ## Technology Stack
 
 ### Frontend
-- React
-- TailwindCSS
-- Context API for state management
+- **React**: JavaScript library for building user interfaces.
+- **TailwindCSS**: Utility-first CSS framework for styling.
+- **React Router**: For navigation.
 
 ### Utilities
-- Axios for API requests
-- React Router for navigation
-- PostCSS for CSS processing
+- **Axios**: For API requests.
+- **PostCSS**: For CSS processing.
+- **Context API**: For state management.
 
 ## Prerequisites
 
@@ -102,9 +102,30 @@ StartupBridge-Frontend
 └── ...
 ```
 
+## Testing
+
+### Unit Tests
+- Write unit tests for components using Jest and React Testing Library.
+- Run tests with:
+  ```bash
+  npm test
+  ```
+
+### End-to-End Testing
+- Use Cypress for end-to-end testing.
+- Configure Cypress and run tests with:
+  ```bash
+  npx cypress open
+  ```
+
 ## Contribution
 
 Contributions are welcome! Please fork the repository and create a pull request with detailed explanations of your changes.
+
+### Contribution Guidelines
+1. Create an issue describing your proposed changes.
+2. Follow the coding standards used in the project.
+3. Ensure all new components are tested.
 
 ## License
 
