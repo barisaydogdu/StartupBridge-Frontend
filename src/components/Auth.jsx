@@ -131,7 +131,8 @@ export const Login = () => {
                 if (result.token) {
                     localStorage.setItem('token', result.token);
                    // window.location.replace('/dashboard');
-                    window.location.replace('/roleselection');
+                   // window.location.replace('/home');
+                    window.location.replace('/Home');
                 } else {
                     //Token gelmediyse hata mesajı göster
                     setError('Login failed!');
