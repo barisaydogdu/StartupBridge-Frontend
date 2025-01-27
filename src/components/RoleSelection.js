@@ -3,7 +3,6 @@ import { Rocket, DollarSign } from 'lucide-react';
 
 const RoleSelection = () => {
     const handleRoleSelect = (role) => {
-        // You can add logic here to save the role to your backend if needed
         if (role === 'entrepreneur') {
             window.location.href = '/entrepreneurs/create';
         } else {

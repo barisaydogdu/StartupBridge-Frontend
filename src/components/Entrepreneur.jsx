@@ -133,7 +133,8 @@ const EntrepreneurForm = ({ onNavigate }) => {
                 throw new Error(errorData.message || 'Failed to create entrepreneur');
             }
 
-            onNavigate('list');
+            //onNavigate('list');
+            window.location.replace("/Home")
         } catch (err) {
             setError(err.message);
         } finally {

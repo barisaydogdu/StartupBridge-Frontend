@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { User, Mail, Phone, MapPin,Heart,DollarSign, Building,Calendar,Upload, Camera, X  } from 'lucide-react';
+import { User, Mail, Phone, MapPin,Heart,DollarSign, Building,Calendar,Upload, Camera, X, XIcon,SaveIcon,MailIcon,EyeIcon, FileTextIcon,PhoneIcon,UserIcon,ImageIcon,EyeOffIcon} from 'lucide-react';
 import { Routes, Route, useNavigate, useParams } from 'react-router-dom';
 
 const API_URL = 'http://localhost:8080/investors';
@@ -139,7 +139,9 @@ const InvestorForm = ({ onNavigate }) => {
                 throw new Error(errorData.message || 'Failed to create investor');
             }
 
-            onNavigate('list');
+           // onNavigate('Home');
+          //  window.location.href = '/Home';
+            window.location.href = '/Home';
         } catch (err) {
             setError(err.message);
         } finally {
@@ -568,10 +570,11 @@ const InvestorDetails = ({ onNavigate }) => {
                                 </button>
                             )}
                             <button
-                                onClick={() => onNavigate('list')}
+                                //onClick={() => onNavigate('list')}
+                                onClick={() => window.location.replace('/Home')}
                                 className="px-6 py-2 bg-indigo-500 text-white rounded-lg font-medium hover:bg-indigo-400 transition-colors"
                             >
-                                Back to List
+                                Back to Home
                             </button>
                         </div>
                     </div>
@@ -894,7 +897,7 @@ const InvestorEditForm = ({onNavigate}) => {
         });
     };
 
-    if (loading) return <div className="flex justify-center p-8">Loading...</div>;
+   /* if (loading) return <div className="flex justify-center p-8">Loading...</div>;
 
     return (
         <div className="container mx-auto p-4 max-w-2xl">
@@ -969,7 +972,7 @@ const InvestorEditForm = ({onNavigate}) => {
                             )}
                             <input
                                 type="file"
-                                accept="image/*"
+                                accept="image/!*"
                                 onChange={handleImageChange}
                                 className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                             />
@@ -1021,7 +1024,164 @@ const InvestorEditForm = ({onNavigate}) => {
             </form>
         </div>
     );
+};*/
+    if (loading) return <div className="flex justify-center p-8">Loading...</div>;
+
+    return (
+        <div className="bg-gradient-to-br from-blue-50 to-white min-h-screen flex items-center justify-center p-4">
+            <div className="w-full max-w-2xl bg-white shadow-2xl rounded-xl border border-gray-100 overflow-hidden">
+                <div className="bg-blue-600 text-white p-6 flex items-center space-x-4">
+                    <UserIcon className="w-10 h-10" />
+                    <h1 className="text-2xl font-bold">Edit Entrepreneur Profile</h1>
+                </div>
+
+                {error && (
+                    <div className="bg-red-50 border-l-4 border-red-500 p-4 text-red-700 m-4">
+                        <p>{error}</p>
+                    </div>
+                )}
+
+                <form onSubmit={handleSubmit} className="p-6 space-y-6">
+                    <div className="grid md:grid-cols-2 gap-6">
+                        <div className="relative">
+                            <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
+                                <UserIcon className="w-4 h-4 mr-2 text-blue-500" />
+                                First Name
+                            </label>
+                            <input
+                                type="text"
+                                name="first_name"
+                                required
+                                value={formData.first_name}
+                                onChange={handleChange}
+                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 transition-all"
+                                placeholder="Enter first name"
+                            />
+                        </div>
+
+                        <div className="relative">
+                            <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
+                                <UserIcon className="w-4 h-4 mr-2 text-blue-500" />
+                                Last Name
+                            </label>
+                            <input
+                                type="text"
+                                name="last_name"
+                                required
+                                value={formData.last_name}
+                                onChange={handleChange}
+                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 transition-all"
+                                placeholder="Enter last name"
+                            />
+                        </div>
+
+                        <div className="relative">
+                            <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
+                                <MailIcon className="w-4 h-4 mr-2 text-blue-500" />
+                                Email
+                            </label>
+                            <input
+                                type="email"
+                                name="email"
+                                required
+                                value={formData.email}
+                                onChange={handleChange}
+                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 transition-all"
+                                placeholder="Enter email address"
+                            />
+                        </div>
+
+                        <div className="relative">
+                            <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
+                                <PhoneIcon className="w-4 h-4 mr-2 text-blue-500" />
+                                Phone Number
+                            </label>
+                            <input
+                                type="tel"
+                                name="phone_number"
+                                value={formData.phone_number}
+                                onChange={handleChange}
+                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 transition-all"
+                                placeholder="Optional phone number"
+                            />
+                        </div>
+                    </div>
+
+                    <div>
+                        <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
+                            <ImageIcon className="w-4 h-4 mr-2 text-blue-500" />
+                            Profile Picture
+                        </label>
+                        <div className="flex items-center space-x-4">
+                            {imagePreview && (
+                                <div className="w-24 h-24 rounded-full border-4 border-blue-200 overflow-hidden">
+                                    <img
+                                        src={imagePreview}
+                                        alt="Profile preview"
+                                        className="w-full h-full object-cover"
+                                    />
+                                </div>
+                            )}
+                            <input
+                                type="file"
+                                accept="image/*"
+                                onChange={handleImageChange}
+                                className="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                            />
+                        </div>
+                    </div>
+
+                    <div>
+                        <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
+                            <FileTextIcon className="w-4 h-4 mr-2 text-blue-500" />
+                            Bio
+                        </label>
+                        <textarea
+                            name="bio"
+                            value={formData.bio}
+                            onChange={handleChange}
+                            rows="4"
+                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 transition-all"
+                            placeholder="Tell us about yourself..."
+                        />
+                    </div>
+
+                    <div className="flex items-center space-x-2">
+                        <input
+                            type="checkbox"
+                            name="phone_visibility"
+                            checked={formData.phone_visibility}
+                            onChange={handleChange}
+                            className="form-checkbox h-4 w-4 text-blue-600 rounded focus:ring-blue-500"
+                        />
+                        <label className="flex items-center text-sm text-gray-700">
+                            {formData.phone_visibility ? <EyeIcon className="w-4 h-4 mr-2 text-blue-500" /> : <EyeOffIcon className="w-4 h-4 mr-2 text-gray-400" />}
+                            Make phone number visible to others
+                        </label>
+                    </div>
+
+                    <div className="flex justify-end space-x-4">
+                        <button
+                            type="button"
+                            onClick={() => onNavigate('details', id)}
+                            className="flex items-center px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-all"
+                        >
+                            <XIcon className="w-4 h-4 mr-2" /> Cancel
+                        </button>
+                        <button
+                            type="submit"
+                            disabled={isSubmitting}
+                            className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all disabled:opacity-50"
+                        >
+                            {isSubmitting ? 'Saving...' : <><SaveIcon className="w-4 h-4 mr-2" /> Save Changes</>}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    );
 };
+
 
 
 
@@ -1042,6 +1202,8 @@ const Investors = () => {
             case 'edit':
                 navigate(`/investors/${id}/edit`);
                 break;
+            case "Home":
+                navigate('/Home')
             default:
                 navigate('/investors');
         }

@@ -72,6 +72,7 @@ const ProjectCreate = () => {
             setFormData(initialFormState);
             setIsEditing(false);
             setCurrentProject(null);
+            window.location.replace("/projectslist")
         } catch (err) {
             setError(err.message);
         }
